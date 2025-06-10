@@ -1,0 +1,45 @@
+# Configuration Ville/Population Simple pour Mode Générique SEIRS
+# Fichier à utiliser pour l'argument inFilenameCity de SimulationParams
+
+# Paramètres lus par la boucle de inFilenameCity dans SimulationParams.cpp.
+# Ces valeurs sont nécessaires pour structurer la simulation pour TOUS les modes.
+
+size||100                     # Taille de la grille (supposée carrée: size x size)
+nbHumain||10000               # Nombre total d'agents dans la simulation
+nbMalade||20                  # Nombre d'agents initialement infectés (pour le mode GENERIQUE_SEIRS, ils commenceront en état I)
+nbIteration||365              # Nombre total de jours/pas de temps pour la simulation
+nbDeplacementJour||3          # Nombre moyen de tentatives de déplacement par agent par jour (pour le mode GENERIQUE_SEIRS simple)
+
+# Requis par le constructeur de Human via SimulationParams, même si l'âge n'est pas directement
+# utilisé par la logique d'évolution du mode GENERIQUE_SEIRS.
+# Distribution uniforme simple sur 8 tranches d'âge.
+probasCumulativesTrancheAge||0.125,0.25,0.375,0.5,0.625,0.75,0.875,1.0
+
+# Paramètres de lieux. Mis à 0 ou vide car non utilisés en mode générique,
+# mais peuvent être nécessaires pour que le parser SimulationParams.cpp ne génère pas d'erreur
+# s'il s'attend à trouver ces clés (même si les valeurs ne sont pas utilisées par la logique générique).
+nbHopitaux||0
+tailleHopitauxMetreCarre||    # Laisser vide si le parser gère les listes vides pour les int.
+facteurTailleHopitaux||0
+nbSalleDeSport||0
+nbBoiteDeNuit||0
+nbMagasin||0
+nbRestaurant||0
+
+# Paramètres liés à la structure de la ville (simplifiés pour une seule "ville" globale)
+# Ces valeurs doivent correspondre à 'size' et 'nbHumain' si on ne simule qu'une zone globale.
+tailleVille||100
+nbHabitant||10000
+coordonneeX||0
+coordonneeY||0
+
+# Paramètres requis par le parser SimulationParams.cpp même s'ils ne sont pas utilisés en mode générique.
+# Mettre à 0 pour éviter des erreurs si les clés sont attendues.
+nbPlaceHospital||0
+nbPlaceReanimation||0
+
+# NOTE: Tous les autres paramètres lus depuis inFilenameCity par SimulationParams.cpp
+# (s'il y en a d'autres non listés ici) devraient également avoir une valeur par défaut ou une ligne ici
+# pour assurer un parsing complet sans erreur, même si la logique GENERIQUE_SEIRS ne les utilise pas.
+# Il est crucial de vérifier la _mapStringValues dans SimulationParams.cpp pour les clés attendues
+# dans la boucle de lecture de inFilenameCity (celles avec ID >= 1000 et < 2000).

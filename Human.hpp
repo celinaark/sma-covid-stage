@@ -13,16 +13,17 @@
 
 extern RandMT * randmt;
 
-class Human 
+enum class StatutGenerique { S, E, I, R };
+
+class Human
 {
    private:
-      
       static const char SYMBOL = 'X';
       static const char SYMBOL_SICK = 'O';
       static const char SYMBOL_SICK_CONFINED = 'C';
       static const char SYMBOL_SICK_HOSPITAL = 'H';
       static const char SYMBOL_SICK_REANIMATION = 'R';
-      
+
       static std::vector<float> _resistanceInfectionValuesByAge;
       static std::vector<float> _maxResistanceInjectionValuesByAge;
       static std::vector<float> _minResistanceInjectionValuesByAge;
@@ -33,16 +34,15 @@ class Human
       static std::vector<float>  _tauxDeProtectionHospInfectionByAge;
       static std::vector<float>  _tauxDeProtectionReaInfectionByAge;
       static std::vector<float>  _probasCumulativesTrancheAge;
-      
       static float      _tauxAugmentationReaObesite;
       static float      _tauxAugmentationHospObesite;
       static float      _tauxAugmentationReaDiabete;
       static float      _tauxAugmentationHospDiabete;
-      
+
       int               _state = 0;
       char              _symbol;
       int               _age;
-      bool               _sexe; //true homme et false femme
+      bool              _sexe;
       bool              _isConfined = false;
       bool              _isHospital = false;
       bool              _isReanimation = false;
@@ -53,11 +53,8 @@ class Human
       float             _newTauxDeProtectionInfection = 0;
       float             _newTauxDeProtectionHospitalisation = 0;
       float             _newTauxDeProtectionReanimation = 0;
-      
-
       int               _dureeReanimation = 0;
       int               _daysSinceLastInfectionOrInjection = 0;
-
       int               _numberOfInfections = 0;
       int               _numberOfInjections = 0;
       bool              _isObese = false;
@@ -68,8 +65,16 @@ class Human
       Position          _pos;
       Position          _posDebutTour;
 
+      // REFACTORING: Nouveaux membres pour la période d'incubation non contagieuse (optionnelle)
+      bool              _enIncubationNonContagieuse;
+      int               _joursIncubationRestants;
+
    public:
- 
+      // REFACTORING: Membres pour le statut SEIRS générique rendus publics temporairement
+      // pour initialisation par World::addAgent.
+      StatutGenerique _statut_generique_actuel;
+      int             _temps_en_statut_generique;
+
       Human(SimulationParams*,int,int);
       ~Human();
 
@@ -90,8 +95,10 @@ class Human
       bool      getIsSuperContaminateur() const;
       float     getTauxComorbiditeRea() const;
       float     getTauxComorbiditeHosp() const;
-      bool      isSick() const;
-      
+
+      bool      isSick(const std::string& modeSimulation) const;
+      bool      isContagieux(const std::string& modeSimulation, const SimulationParams* params) const;
+
       void      setIsObese();
       void      setIsDiabete();
       void      setIsSuperContaminateur(bool);
@@ -105,14 +112,22 @@ class Human
       void      decreaseResistance();
       void      resetState();
       void      incrementState();
-      char      to_string();
+      char      to_string_covid_symbol();
       void      contamine();
       void      vaccine();
       void      vaccineRappel();
       void      toConfined() ;
 
+      void      evoluerQuotidiennement(SimulationParams* params, Human*** carte, int taille_grille_x, int taille_grille_y, RandMT* prng);
+
+      StatutGenerique getStatutGenerique() const;
+      std::string statutGeneriqueToString() const;
+
       static void initHumanParams(SimulationParams *);
+
+   private:
+      void evoluerEtatGeneriqueSEIRS(SimulationParams* params, Human*** carte, int taille_grille_x, int taille_grille_y, RandMT* prng_pour_infection_check);
+      void verifierInfectionGeneriqueSEIRS(Human*** carte, int taille_grille_x, int taille_grille_y, float forceInfectionGenerique, float rand_val);
 };
 
-
-#endif
+#endif // _SIMU_EPIDEMIO_HUMAN_

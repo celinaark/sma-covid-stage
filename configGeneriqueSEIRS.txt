@@ -1,0 +1,19 @@
+# Configuration pour un modèle SEIRS Générique Simple
+# Fichier à utiliser pour l'argument inFilenameConfigParams de SimulationParams
+
+# REFACTORING: Définition du mode de simulation.
+# Options possibles: "COVID" (défaut si non spécifié), "GENERIQUE_SEIRS"
+modeSimulation||GENERIQUE_SEIRS
+
+# REFACTORING: Paramètres spécifiques au mode GENERIQUE_SEIRS avec les noms mis à jour
+dureeIncubationGenerique||3       # Durée moyenne en jours de l'état Exposé (non contagieux)
+dureeContaminationGenerique||7    # Durée moyenne en jours de l'état Infectieux (contagieux)
+dureeImmuniteGenerique||90        # Durée moyenne en jours de l'état Rétabli (immunisé) avant retour à S.
+                                    # Mettre 0 ou une valeur très grande pour une immunité quasi-permanente (modèle SEIR).
+forceInfectionGenerique||0.05     # Force d'infection de base.
+
+# Les autres paramètres spécifiques au COVID (variants, vaccins, masques, histogrammes de contamination spécifiques, etc.)
+# ne sont pas listés ici car ils ne seraient pas utilisés par la logique "GENERIQUE_SEIRS" dans Human.cpp.
+# Si SimulationParams.cpp essayait de lire des paramètres COVID absents, il utiliserait ses valeurs par défaut,
+# ce qui est le comportement souhaité pour un fichier de configuration dédié au mode générique.
+# Par exemple, r0, histogrammeContamination, etc., ne sont pas nécessaires ici pour ce mode.
